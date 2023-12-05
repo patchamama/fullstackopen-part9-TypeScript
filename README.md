@@ -1,24 +1,19 @@
-# fullstackopen-part9-TypeScript
+# Part 9. TypeScript
 
-## Description
+## a. Background and introduction
 
-## Installation
+## b. First steps with TypeScript
 
-## Usage
+- [Exercise 9.1.]() | [Exercise 9.2.]() | [Exercise 9.3.]() | [Exercise 9.4.]() | [Exercise 9.5.]() | [Exercise 9.6.]() | [Exercise 9.7.]() |
 
-## Contributing
+## c. Typing an Express app
 
-## License
+- [Exercise 9.8.]() | [Exercise 9.9.]() | [Exercise 9.10.]() | [Exercise 9.11.]() | [Exercise 9.12.]() | [Exercise 9.13.]()
 
-## Project status
+## d. React with types
 
-## Author
+- [Exercise 9.14.]() | [Exercise 9.15.]() | [Exercise 9.16.]() | [Exercise 9.17.]() | [Exercise 9.18.]() | [Exercise 9.19.]()
 
-## Acknowledgements
+## e. Grande finale: Patientor
 
-## Contact
-
-## Project link
-
-## Project dependencies
-
+- [Exercise 9.20.]() | [Exercise 9.21.]() | [Exercise 9.22.]() | [Exercise 9.23.]() | [Exercise 9.24.]() | [Exercise 9.25.]() | [Exercise 9.26.]() | [Exercise 9.27.]() | [Exercise 9.28.]() | [Exercise 9.29.]()
