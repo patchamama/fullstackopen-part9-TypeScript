@@ -19,3 +19,5 @@ if (process.argv.length === 4) {
   console.log('No parameters given, using default values (180cm, 74kg)')
   console.log(calculateBmi(180, 74))
 }
+
+export { calculateBmi }
