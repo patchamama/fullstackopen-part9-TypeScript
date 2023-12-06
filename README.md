@@ -10,7 +10,7 @@
 
 - [Exercise 9.8.]() | [Exercise 9.9.]() | [Exercise 9.10.]() | [Exercise 9.11.]() | [Exercise 9.12.]() | [Exercise 9.13.]()
 
-## d. React with types
+## d. React with types
 
 - [Exercise 9.14.]() | [Exercise 9.15.]() | [Exercise 9.16.]() | [Exercise 9.17.]() | [Exercise 9.18.]() | [Exercise 9.19.]()
 
