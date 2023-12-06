@@ -1,3 +1,5 @@
+import { isNotNumber } from './utils'
+
 interface Result {
   periodLength: number
   trainingDays: number
@@ -36,4 +38,19 @@ const calculateExercises = (
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+if (process.argv.length > 4) {
+  const target = Number(process.argv[2])
+  const dailyExerciseHours = process.argv.slice(3).map((hours) => {
+    if (isNotNumber(hours)) {
+      throw new Error('Provided values were not numbers!')
+    }
+    return Number(hours)
+  })
+  console.log(target, dailyExerciseHours)
+  console.log(calculateExercises(dailyExerciseHours, target))
+} else {
+  console.log(
+    'No parameters given, using default values (target 2, daily exercise hours 3, 0, 2, 4.5, 0, 3, 1)'
+  )
+  console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+}
