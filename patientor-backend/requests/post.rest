@@ -1,0 +1,12 @@
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Arto Hellas",
+  "dateOfBirth": "1950-10-10",
+  "ssn": "121250-123J",
+  "gender": "male",
+  "occupation": "researcher"
+}
+
+  
