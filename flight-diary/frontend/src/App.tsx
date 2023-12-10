@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Header } from './components/Header';
-import { Weather, Visibility, Diaries, NewDiariesEntry } from './types';
+import { Diaries, NewDiariesEntry } from './types';
 import Entry from './components/Entry';
+import { Notification } from './components/Notification';
 
 function App() {
   const [diaries, setDiaries] = useState<Diaries[]>([]);
+  const [notification, setNotification] = useState<string | null>(null);
 
   useEffect(() => {
     // fetch('http://localhost:3000/api/diaries')
@@ -13,6 +15,12 @@ function App() {
       .get<Diaries[]>('http://localhost:3000/api/diaries')
       .then((response) => console.log(setDiaries(response.data)));
   }, []);
+
+  //---------
+  interface ValidationError {
+    message: string;
+    errors: Record<string, string[]>;
+  }
 
   const FormEntry = () => {
     const [newDiary, setNewDiary] = useState<NewDiariesEntry>({
@@ -29,6 +37,26 @@ function App() {
         .then((response) => {
           setDiaries([...diaries, response.data]);
           setNewDiary({ date: '', visibility: '', weather: '', comment: '' });
+        })
+        .catch((error) => {
+          if (
+            axios.isAxiosError<ValidationError, Record<string, unknown>>(error)
+          ) {
+            console.log(error.status);
+            console.error(error.response);
+
+            setNotification(
+              error.response?.data?.toString() || 'Sorry, an error occurred'
+            );
+            setTimeout(() => {
+              setNotification(null);
+            }, 5000);
+            setTimeout(() => {
+              setNotification(null);
+            }, 5000);
+          } else {
+            console.error(error);
+          }
         });
     };
 
@@ -90,6 +118,8 @@ function App() {
   return (
     <>
       <Header text='Add new entry' />
+
+      <Notification message={notification} />
       <FormEntry />
 
       <Header text='Diary entries' />
