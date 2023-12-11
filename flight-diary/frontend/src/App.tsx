@@ -51,9 +51,6 @@ function App() {
             setTimeout(() => {
               setNotification(null);
             }, 5000);
-            setTimeout(() => {
-              setNotification(null);
-            }, 5000);
           } else {
             console.error(error);
           }
@@ -65,7 +62,7 @@ function App() {
         <label>
           Date:
           <input
-            type='text'
+            type='date'
             name='date'
             value={newDiary?.date}
             onChange={(event) =>
@@ -77,25 +74,99 @@ function App() {
         <label>
           Visibility:
           <input
-            type='text'
+            type='radio'
+            id='great'
             name='visibility'
-            value={newDiary?.visibility}
+            value='great'
             onChange={(event) =>
               setNewDiary({ ...newDiary, visibility: event?.target.value })
             }
           />
+          <label htmlFor='great'>great</label>
+          <input
+            type='radio'
+            id='good'
+            name='visibility'
+            value='good'
+            onChange={(event) =>
+              setNewDiary({ ...newDiary, visibility: event?.target.value })
+            }
+          />
+          <label htmlFor='good'>good</label>
+          <input
+            type='radio'
+            name='visibility'
+            id='ok'
+            value='ok'
+            onChange={(event) =>
+              setNewDiary({ ...newDiary, visibility: event?.target.value })
+            }
+          />
+          <label htmlFor='ok'>ok</label>
+          <input
+            type='radio'
+            name='visibility'
+            id='poor'
+            value='poor'
+            onChange={(event) =>
+              setNewDiary({ ...newDiary, visibility: event?.target.value })
+            }
+          />
+          <label htmlFor='poor'>poor</label>
         </label>
         <br />
         <label>
           Weather:
           <input
-            type='text'
+            type='radio'
             name='weather'
-            value={newDiary?.weather}
+            id='sunny'
+            value='sunny'
             onChange={(event) =>
               setNewDiary({ ...newDiary, weather: event?.target.value })
             }
           />
+          <label htmlFor='sunny'>sunny</label>
+          <input
+            type='radio'
+            name='weather'
+            id='rainy'
+            value='rainy'
+            onChange={(event) =>
+              setNewDiary({ ...newDiary, weather: event?.target.value })
+            }
+          />
+          <label htmlFor='rainy'>rainy</label>
+          <input
+            type='radio'
+            name='weather'
+            id='cloudy'
+            value='cloudy'
+            onChange={(event) =>
+              setNewDiary({ ...newDiary, weather: event?.target.value })
+            }
+          />
+          <label htmlFor='cloudy'>cloudy</label>
+          <input
+            type='radio'
+            name='weather'
+            id='stormy'
+            value='stormy'
+            onChange={(event) =>
+              setNewDiary({ ...newDiary, weather: event?.target.value })
+            }
+          />
+          <label htmlFor='stormy'>stormy</label>
+          <input
+            type='radio'
+            name='weather'
+            id='windy'
+            value='windy'
+            onChange={(event) =>
+              setNewDiary({ ...newDiary, weather: event?.target.value })
+            }
+          />
+          <label htmlFor='windy'>windy</label>
         </label>
         <br />
         <label>
@@ -110,7 +181,7 @@ function App() {
           />
         </label>
         <br />
-        <input type='submit' value='Submit' />
+        <input type='submit' value='Add' />
       </form>
     );
   };

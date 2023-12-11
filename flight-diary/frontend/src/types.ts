@@ -1,18 +1,16 @@
 export enum Weather {
   Sunny = 'sunny',
   Rainy = 'rainy',
-  Windy = 'windy',
-  Stormy = 'stormy',
-  Snowy = 'snowy',
   Cloudy = 'cloudy',
+  Stormy = 'stormy',
+  Windy = 'windy',
 }
 
 export enum Visibility {
-  Excellent = 'excellent',
+  Great = 'great',
   Good = 'good',
-  Average = 'average',
+  Ok = 'ok',
   Poor = 'poor',
-  VeryPoor = 'very poor',
 }
 
 export interface Diaries {
