@@ -61,20 +61,14 @@ const isDate = (date: string): boolean => {
   return Boolean(Date.parse(date));
 };
 
-const parseGender = (string: unknown, name: string): string => {
-  if (!string || !isString(string) || !isGender(string)) {
-    throw new Error(`Incorrect or missing ${name}: ${string}`);
+const parseGender = (gender: unknown, name: string): Gender => {
+  if (!gender || !isGender(gender)) {
+    throw new Error(`Incorrect or missing ${name}: ${gender}`);
   }
 
-  return string;
+  return gender as Gender;
 };
 
-// const isGender = (param: string): param is Gender => {
-//   return (Object.values(Gender) as string[]).includes(param);
-// };
-
-const isGender = (param: string): param is Gender => {
-  return Object.values(Gender)
-    .map((v) => v.toString())
-    .includes(param);
+const isGender = (param: unknown): param is Gender => {
+  return Object.values(Gender).includes(param as Gender);
 };
