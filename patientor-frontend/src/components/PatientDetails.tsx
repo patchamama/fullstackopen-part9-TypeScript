@@ -1,9 +1,31 @@
 import { useParams } from 'react-router-dom';
-import { Patient } from '../types';
+import { Patient, Entry } from '../types';
 import { Icon } from 'semantic-ui-react';
 import { useEffect, useState } from 'react';
 import patientService from '../services/patients';
-import Diagnoses from './Diagnoses';
+import { Hospital } from './Hospital';
+import { OccupationalHealthcare } from './OccupationalHealthcare';
+import { HealthCheck } from './HealthCheck';
+
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
+const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+  console.log('EntryDetails', entry);
+  switch (entry.type) {
+    case 'Hospital':
+      return <Hospital entry={entry} />;
+    case 'OccupationalHealthcare':
+      return <OccupationalHealthcare entry={entry} />;
+    case 'HealthCheck':
+      return <HealthCheck entry={entry} />;
+    default:
+      return assertNever(entry);
+  }
+};
 
 const PatientDetails = () => {
   const [actpatient, setActPatient] = useState<Patient[]>([]);
@@ -57,26 +79,13 @@ const PatientDetails = () => {
       {patient && (
         <div>
           <h2>
-            {patient.name} {'('}
-            {iconName}
-            {') '} <Icon name={iconName} />{' '}
+            {patient.name} <Icon name={iconName} />{' '}
           </h2>
           <p>ssn: {patient.ssn}</p>
           <p>occupation: {patient.occupation}</p>
           <h2>entries</h2>
           {patient.entries.map((entry) => (
-            <div key={entry.id}>
-              <p>
-                {entry.date} <i>{entry.description}</i>
-              </p>
-              <ul>
-                {entry.diagnosisCodes?.map((code) => (
-                  <li key={code}>
-                    <Diagnoses code={code} />
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <EntryDetails key={entry.id} entry={entry} />
           ))}
         </div>
       )}
