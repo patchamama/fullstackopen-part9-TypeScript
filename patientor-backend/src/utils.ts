@@ -1,4 +1,10 @@
-import { NewPatientEntry, Gender, Entry } from './types';
+import {
+  NewPatientEntry,
+  Gender,
+  Entry,
+  Diagnosis,
+  EntryWithoutId,
+} from './types';
 
 export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   if (!object || typeof object !== 'object') {
@@ -24,6 +30,39 @@ export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
     return newEntry;
   }
   throw new Error('Incorrect data: a field missing');
+};
+
+export const toNewEntry = (object: unknown): EntryWithoutId => {
+  if (!object || typeof object !== 'object') {
+    throw new Error('Incorrect or missing data');
+  }
+
+  if (
+    'description' in object &&
+    'date' in object &&
+    'specialist' in object &&
+    'diagnosisCodes' in object
+  ) {
+    const newEntry: EntryWithoutId = {
+      description: parseString(object.description, 'description'),
+      date: parseDate(object.date, 'date'),
+      specialist: parseString(object.specialist, 'specialist'),
+      diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes),
+      type: 'HealthCheck',
+      healthCheckRating: 0, // Provide a value for healthCheckRating
+    };
+    return newEntry as EntryWithoutId; // Cast newEntry as HealthCheckEntry
+  }
+  throw new Error('Incorrect data: a field missing');
+};
+
+const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> => {
+  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis['code']>;
+  }
+
+  return object.diagnosisCodes as Array<Diagnosis['code']>;
 };
 
 const parseEntries = (entries: unknown): Entry[] => {

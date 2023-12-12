@@ -4,9 +4,11 @@ import {
   NonSensitivePatientEntry,
   PatientEntry,
   NewPatientEntry,
+  EntryWithoutId,
+  Entry,
 } from '../types';
 
-const getEntries = (): NonSensitivePatientEntry[] => {
+const getEntries = (): PatientEntry[] => {
   return patients;
 };
 
@@ -28,7 +30,7 @@ export const findById = (id: string): PatientEntry | undefined => {
   return entry;
 };
 
-export const addEntry = (entry: NewPatientEntry): PatientEntry => {
+export const addPatientEntry = (entry: NewPatientEntry): PatientEntry => {
   const id: string = uuid();
   const newPatientEntry = {
     id,
@@ -39,9 +41,20 @@ export const addEntry = (entry: NewPatientEntry): PatientEntry => {
   return newPatientEntry;
 };
 
+export const addEntry = (entry: EntryWithoutId): Entry => {
+  const id: string = uuid();
+  const newEntry = {
+    id,
+    ...entry,
+  };
+
+  return newEntry;
+};
+
 export default {
   getEntries,
   getNonSensitiveEntries,
+  addPatientEntry,
   addEntry,
   findById,
 };

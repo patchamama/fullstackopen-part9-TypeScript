@@ -1,5 +1,5 @@
 import express from 'express';
-import { toNewPatientEntry } from '../utils';
+import { toNewPatientEntry, toNewEntry } from '../utils';
 
 import patientService from '../services/patientService';
 
@@ -19,7 +19,7 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   try {
     const newPatientEntry = toNewPatientEntry(req.body);
-    const addedEntry = patientService.addEntry(newPatientEntry);
+    const addedEntry = patientService.addPatientEntry(newPatientEntry);
     res.json(addedEntry);
   } catch (error: unknown) {
     let errorMessage = 'Something went wrong.';
@@ -28,17 +28,38 @@ router.post('/', (req, res) => {
     }
     res.status(400).send(errorMessage);
   }
-
-  // const { name, dateOfBirth, ssn, gender, occupation } = req.body;
-  // const newPatientEntry: PatientEntry = patientService.addEntry(
-  //   name,
-  //   dateOfBirth,
-  //   ssn,
-  //   gender,
-  //   occupation
-  // );
-
-  // res.json(newPatientEntry);
 });
+
+router.post('/:id/entries', (req, res) => {
+  try {
+    const newEntry = toNewEntry(req.body); // EntryWithoutId
+    const patient = patientService.findById(req.params.id);
+    if (!patient) {
+      res.sendStatus(404);
+    }
+
+    const addedEntry = patientService.addEntry(newEntry);
+    patient?.entries.push(addedEntry);
+    res.json(addedEntry);
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    res.status(400).send(errorMessage);
+  }
+});
+
+// const { name, dateOfBirth, ssn, gender, occupation } = req.body;
+// const newPatientEntry: PatientEntry = patientService.addEntry(
+//   name,
+//   dateOfBirth,
+//   ssn,
+//   gender,
+//   occupation
+// );
+
+// res.json(newPatientEntry);
+// });
 
 export default router;

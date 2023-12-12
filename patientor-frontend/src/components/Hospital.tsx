@@ -11,6 +11,7 @@ export const Hospital: React.FC<{ entry: HospitalEntry }> = ({ entry }) => (
         {entry.date} <Icon name='hospital symbol' />
       </Card.Content>
       <Card.Content description={entry.description} />
+      <Card.Content extra>diagnose by {entry.specialist}</Card.Content>
     </Card>
   </div>
 );
