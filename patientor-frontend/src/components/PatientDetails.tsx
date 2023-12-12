@@ -3,6 +3,7 @@ import { Patient } from '../types';
 import { Icon } from 'semantic-ui-react';
 import { useEffect, useState } from 'react';
 import patientService from '../services/patients';
+import Diagnoses from './Diagnoses';
 
 const PatientDetails = () => {
   const [actpatient, setActPatient] = useState<Patient[]>([]);
@@ -70,7 +71,9 @@ const PatientDetails = () => {
               </p>
               <ul>
                 {entry.diagnosisCodes?.map((code) => (
-                  <li key={code}>{code}</li>
+                  <li key={code}>
+                    <Diagnoses code={code} />
+                  </li>
                 ))}
               </ul>
             </div>
