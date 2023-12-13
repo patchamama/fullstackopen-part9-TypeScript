@@ -6,7 +6,14 @@ import patientService from '../services/patients';
 import { Hospital } from './Hospital';
 import { OccupationalHealthcare } from './OccupationalHealthcare';
 import { HealthCheck } from './HealthCheck';
-import { TextField, Button, Grid } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Grid,
+  Select,
+  InputLabel,
+  MenuItem,
+} from '@mui/material';
 import { Divider, Alert } from '@mui/material';
 import axios from 'axios';
 
@@ -34,6 +41,14 @@ const PatientDetails = () => {
   const [actpatient, setActPatient] = useState<Patient[]>([]);
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+  const [entryType, setEntryType] = useState<string>('HealthCheck');
+  const [employerName, setEmployerName] = useState<string>('');
+  const [healthCheckRating, setHealthCheckRating] = useState<number>(0);
+  const [sickLeaveStart, setSickLeaveStart] = useState<string>('');
+  const [sickLeaveEnd, setSickLeaveEnd] = useState<string>('');
+  const [dischargeDate, setDischargeDate] = useState<string>('');
+  const [dischargeCriteria, setDischargeCriteria] = useState<string>('');
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string>('');
 
   const { id } = useParams<{ id: string }>();
 
@@ -48,7 +63,10 @@ const PatientDetails = () => {
 
   const submitNewEntries = async (values: EntryWithoutId) => {
     try {
-      const patient = await patientService.addEntry(id as string, values);
+      const patient = await patientService.addEntry(
+        id as string,
+        values as EntryWithoutId
+      );
       const resultPatient = await patientService.getId(id as string);
       setActPatient([resultPatient]);
       console.log('result axios: ', patient);
@@ -72,14 +90,19 @@ const PatientDetails = () => {
     }
   };
 
+  const typeOptions = [
+    { label: 'Hospital', value: 'Hospital' },
+    { label: 'OccupationalHealthcare', value: 'OccupationalHealthcare' },
+    { label: 'HealthCheck', value: 'HealthCheck' },
+  ];
+
   const ShowForm = () => {
     const [data, setData] = useState({
       description: '',
       date: '',
       specialist: '',
       diagnosisCodes: [],
-      type: 'HealthCheck',
-      healthCheckRating: 0,
+      type: entryType,
     });
 
     // const handleInput = (event: React.FormEvent<HTMLInputElement>) => {
@@ -94,10 +117,32 @@ const PatientDetails = () => {
         description: data.description,
         date: data.date,
         specialist: data.specialist,
-        diagnosisCodes: data.diagnosisCodes,
-        type: data.type as 'HealthCheck', //  | 'Hospital' | 'OccupationalHealthcare' | 'HealthCheck',
-        healthCheckRating: data.healthCheckRating,
+        // diagnosisCodes: data.diagnosisCodes,
+        type: data.type as
+          | 'HealthCheck'
+          | 'Hospital'
+          | 'OccupationalHealthcare',
+
+        // healthCheckRating: data.healthCheckRating,
       };
+      if (data.type === 'OccupationalHealthcare') {
+        newEntry.employerName = employerName;
+        newEntry.sickLeave = {
+          startDate: sickLeaveStart,
+          endDate: sickLeaveEnd,
+        };
+        newEntry.diagnosisCodes = diagnosisCodes.split(',');
+      }
+      if (data.type === 'HealthCheck') {
+        newEntry.healthCheckRating = healthCheckRating;
+      }
+      if (data.type === 'Hospital') {
+        newEntry.discharge = {
+          date: dischargeDate,
+          criteria: dischargeCriteria,
+        };
+        newEntry.diagnosisCodes = diagnosisCodes.split(',');
+      }
       submitNewEntries(newEntry);
     };
 
@@ -119,6 +164,7 @@ const PatientDetails = () => {
 
           <TextField
             label='date'
+            placeholder='YYYY-MM-DD'
             name='date'
             type='date'
             fullWidth
@@ -138,65 +184,116 @@ const PatientDetails = () => {
             value={data.specialist}
           />
 
-          <TextField
-            label='diagnosisCodes'
-            name='diagnosisCodes'
-            fullWidth
-            onChange={(event) =>
-              setData({ ...data, [event.target.name]: event.target.value })
-            }
-            value={data.diagnosisCodes}
-          />
-
-          <TextField
+          <InputLabel style={{ marginTop: 20 }}>type</InputLabel>
+          <Select
             label='type'
             name='type'
             fullWidth
-            onChange={(event) =>
-              setData({ ...data, [event.target.name]: event.target.value })
-            }
             value={data.type}
-          />
+            onChange={(event) => {
+              setData({ ...data, [event.target.name]: event.target.value });
+              console.log('event.target.value', event.target.value);
+              setEntryType(event.target.value);
+            }}
+          >
+            {typeOptions.map((option) => (
+              <MenuItem key={option.label} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
 
-          {/* <TextField
-            label='discharge'
-            name='discharge'
-            fullWidth
-            onChange={(event) =>
-              setData({ ...data, [event.target.name]: event.target.value })
-            }
-            value={data.discharge}
-          />
+          {data.type === 'OccupationalHealthcare' && (
+            <>
+              <TextField
+                label='employerName'
+                name='employerName'
+                fullWidth
+                onChange={(event) => {
+                  setEmployerName(event.target.value);
+                  setData({ ...data, [event.target.name]: event.target.value });
+                }}
+                value={employerName}
+              />
 
-          <TextField
-            label='employerName'
-            name='employerName'
-            fullWidth
-            onChange={(event) =>
-              setData({ ...data, [event.target.name]: event.target.value })
-            }
-            value={data.employerName}
-          />
+              <InputLabel style={{ marginTop: 20 }}>Sickleave</InputLabel>
 
-          <TextField
-            label='sickLeave'
-            name='sickLeave'
-            fullWidth
-            onChange={(event) =>
-              setData({ ...data, [event.target.name]: event.target.value })
-            }
-            value={data.sickLeave}
-          /> */}
+              <TextField
+                style={{ marginLeft: 20 }}
+                label='start'
+                placeholder='YYYY-MM-DD'
+                name='sickLeaveStartDate'
+                type='date'
+                fullWidth
+                onChange={(event) => setSickLeaveStart(event.target.value)}
+                value={sickLeaveStart}
+              />
 
-          <TextField
-            label='healthCheckRating'
-            name='healthCheckRating'
-            fullWidth
-            onChange={(event) =>
-              setData({ ...data, [event.target.name]: event.target.value })
-            }
-            value={data.healthCheckRating}
-          />
+              <TextField
+                style={{ marginLeft: 20 }}
+                label='end'
+                placeholder='YYYY-MM-DD'
+                name='sickLeaveStartDate'
+                type='date'
+                fullWidth
+                onChange={(event) => setSickLeaveEnd(event.target.value)}
+                value={sickLeaveEnd}
+              />
+            </>
+          )}
+
+          {data.type === 'OccupationalHealthcare' && (
+            <>
+              <InputLabel style={{ marginTop: 20 }}>Discharge</InputLabel>
+
+              <TextField
+                style={{ marginLeft: 20 }}
+                label='date'
+                placeholder='YYYY-MM-DD'
+                name='dischargeDate'
+                type='date'
+                fullWidth
+                onChange={(event) => setDischargeDate(event.target.value)}
+                value={dischargeDate}
+              />
+
+              <TextField
+                style={{ marginLeft: 20 }}
+                label='criteria'
+                name='dischargeCriteria'
+                fullWidth
+                onChange={(event) => setDischargeCriteria(event.target.value)}
+                value={dischargeCriteria}
+              />
+            </>
+          )}
+
+          {(data.type === 'OccupationalHealthcare' ||
+            data.type === 'Hospital') && (
+            <TextField
+              label='diagnosisCodes'
+              name='diagnosisCodes'
+              fullWidth
+              onChange={(event) => {
+                setDiagnosisCodes(event.target.value);
+                setData({ ...data, [event.target.name]: event.target.value });
+              }}
+              value={diagnosisCodes}
+            />
+          )}
+
+          {data.type === 'HealthCheck' && (
+            <TextField
+              label='healthCheckRating'
+              name='healthCheckRating'
+              fullWidth
+              onChange={(event) => {
+                setData({ ...data, [event.target.name]: event.target.value });
+                setHealthCheckRating(Number(event.target.value));
+              }}
+              value={healthCheckRating}
+            />
+          )}
 
           <Grid>
             <Grid item>
@@ -276,7 +373,7 @@ const PatientDetails = () => {
               Add New Entry
             </Button>
           )}
-          <hr />
+          <Divider />
           {patient.entries.map((entry) => (
             <EntryDetails key={entry.id} entry={entry} />
           ))}
