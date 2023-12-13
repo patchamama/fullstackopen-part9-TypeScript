@@ -3,6 +3,7 @@ import { Patient, Entry, EntryWithoutId } from '../types';
 import { Icon } from 'semantic-ui-react';
 import { useEffect, useState, SyntheticEvent } from 'react';
 import patientService from '../services/patients';
+import diagnoseService from '../services/diagnoses';
 import { Hospital } from './Hospital';
 import { OccupationalHealthcare } from './OccupationalHealthcare';
 import { HealthCheck } from './HealthCheck';
@@ -16,6 +17,32 @@ import {
 } from '@mui/material';
 import { Divider, Alert } from '@mui/material';
 import axios from 'axios';
+
+import { Theme, useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import { SelectChangeEvent } from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+function getStyles(name: string, personName: readonly string[], theme: Theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 const assertNever = (value: never): never => {
   throw new Error(
@@ -48,7 +75,29 @@ const PatientDetails = () => {
   const [sickLeaveEnd, setSickLeaveEnd] = useState<string>('');
   const [dischargeDate, setDischargeDate] = useState<string>('');
   const [dischargeCriteria, setDischargeCriteria] = useState<string>('');
-  const [diagnosisCodes, setDiagnosisCodes] = useState<string>('');
+  const [diagnoseVal, setDiagnoseVal] = useState<string[]>([]);
+  const [diagnosisCodesName, setDiagnosisCodesName] = useState<string[]>([]);
+
+  const theme = useTheme();
+
+  useEffect(() => {
+    const fetchDiagnoseList = async () => {
+      const resultDiagnose = await diagnoseService.getAll();
+      const diagnoseCodesName = resultDiagnose.map((diagnose) => diagnose.code);
+      setDiagnosisCodesName(diagnoseCodesName);
+    };
+    void fetchDiagnoseList();
+  }, []);
+
+  const handleChange = (event: SelectChangeEvent<typeof diagnoseVal>) => {
+    const {
+      target: { value },
+    } = event;
+    setDiagnoseVal(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value
+    );
+  };
 
   const { id } = useParams<{ id: string }>();
 
@@ -270,16 +319,35 @@ const PatientDetails = () => {
 
           {(data.type === 'OccupationalHealthcare' ||
             data.type === 'Hospital') && (
-            <TextField
-              label='diagnosisCodes'
-              name='diagnosisCodes'
-              fullWidth
-              onChange={(event) => {
-                setDiagnosisCodes(event.target.value);
-                setData({ ...data, [event.target.name]: event.target.value });
-              }}
-              value={diagnosisCodes}
-            />
+            <>
+              <InputLabel id='demo-multiple-chip-label'>Diagnoses</InputLabel>
+              <Select
+                labelId='demo-multiple-chip-label'
+                id='demo-multiple-chip'
+                multiple
+                value={diagnoseVal}
+                onChange={handleChange}
+                input={<OutlinedInput id='select-multiple-chip' label='Chip' />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value) => (
+                      <Chip key={value} label={value} />
+                    ))}
+                  </Box>
+                )}
+                MenuProps={MenuProps}
+              >
+                {diagnosisCodesName.map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, diagnoseVal, theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </>
           )}
 
           {data.type === 'HealthCheck' && (
